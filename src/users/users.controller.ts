@@ -1,14 +1,15 @@
 import { Controller, Get } from "@nestjs/common";
+import { UserService } from "./user.service";
 
 @Controller()
 export class UsersController{
 
+    constructor(private readonly userservice : UserService){}
     @Get('/api/users')
     public getAllUsers (){
-        return[
-            {id:1,email:'ahmed@gmail.com'},
-            {id:2,email:'youssf@gmail.com'}
+     
+        return this.userservice.getAll()
 
-        ] 
+        
     }
 }

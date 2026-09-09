@@ -22,8 +22,8 @@ export class ProductController {
 
   @Get()
   public getAllProduct() {
-    return this.productService.getAllProduct();
-  }
+    return this.productService.getAll();
+}
 
   @Get(':id')
   public getProductByID(@Param('id', ParseIntPipe) id: number) {
