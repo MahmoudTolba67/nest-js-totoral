@@ -1,0 +1,32 @@
+### Variables
+@baseUrl = http://localhost:5000/api/products
+
+### 1. Get All Products
+GET {{baseUrl}}
+Content-Type: application/json
+
+### 2. Get Product By ID
+GET {{baseUrl}}/1
+Content-Type: application/json
+
+### 3. Create New Product
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "title": "Laptop Pro",
+  "price": 1200
+}
+
+### 4. Update Product
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "title": "Laptop Pro Max",
+  "price": 1500
+}
+
+### 5. Delete Product
+DELETE {{baseUrl}}/1
+Content-Type: application/json
