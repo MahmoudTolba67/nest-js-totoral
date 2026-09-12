@@ -32,14 +32,14 @@ export class ProductController {
 
   @Put(':id')
   public updateProduct(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() body: UpdateProductDto,
   ) {
     return this.productService.updateProduct(id, body);
   }
 
   @Delete(':id')
-  public deleteProduct(@Param('id') id: string) {
+  public deleteProduct(@Param('id') id: number) {
     return this.productService.deleteProduct(id);
   }
 }

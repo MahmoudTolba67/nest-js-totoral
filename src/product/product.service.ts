@@ -2,12 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dtos/create-prodcut.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { UserService } from '../users/user.service';
+import { Repository } from 'typeorm';
+import { Product } from './product.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 type productType = { id: number; title: string; price: number };
 
 @Injectable()
 export class ProductServices {
-  constructor(private readonly userService : UserService){}
+   constructor(@InjectRepository(Product)
+   private readonly prodcutRepository : Repository<Product>
+   ){}
   private products: productType[] = [
     { id: 1, title: 'book', price: 10 },
     { id: 2, title: 'pen', price: 5 },
@@ -17,14 +22,11 @@ export class ProductServices {
   /**
             create new product
          */
-  public addProduct({ title, price }: CreateProductDto) {
-    const newProduct: productType = {
-      id: this.products.length + 1,
-      title,
-      price,
-    };
-    this.products.push(newProduct);
-    return newProduct;
+  public async addProduct(Dto: CreateProductDto) {
+    const product = this.prodcutRepository.create(Dto) ;
+    return await this.prodcutRepository.save(product) ;
+
+
   }
   /**
            get all product
@@ -32,37 +34,37 @@ export class ProductServices {
 
   public getAll() {
 
-    const product = this.products;
-    const user = this.userService.getAll();
-    return {product , user }
+   return this.prodcutRepository.find();
   }
 
   /**
             get product by id 
          */
-  public getByID(id: number) {
-    const product = this.products.find((p) => p.id === id);
-    if (!product) throw new NotFoundException('product not found');
-    return product;
+  public async getByID(id: number) {
+   const product = await this.prodcutRepository.findOne({where:{id}})
+   if(!product) throw new NotFoundException('product not found')
+    return product
   }
   /**
             update product()
          */
 
-  public updateProduct(id: string, updateProductDto: UpdateProductDto) {
-    const product = this.products.find((p) => p.id === parseInt(id));
-    if (!product) throw new NotFoundException('product not found');
-    console.log(updateProductDto);
+  public async updateProduct(id: number, dto: UpdateProductDto) {
+    const product = await this.getByID(id);
+    product.description = dto.description ?? product.description
+    product.title = dto.title ?? product.title 
+    product.price = dto.price ?? product.price
+    return this.prodcutRepository.save(product)
 
-    return { message: 'the product is updated by id ' + id };
   }
   /**
            delete product
          */
 
-  public deleteProduct(id: string) {
-    const product = this.products.find((p) => p.id === parseInt(id));
-    if (!product) throw new NotFoundException('product not found');
+  public async deleteProduct(id: number) {
+    const product =await this.getByID(id)
+    await this.prodcutRepository.remove(product);
+
     return { message: 'the product is deleted' };
   }
 }

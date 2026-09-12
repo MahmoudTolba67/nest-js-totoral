@@ -15,7 +15,8 @@ Content-Type: application/json
 
 {
   "title": "Laptop Pro",
-  "price": 1200
+  "price": 1200,
+  "description" :"this is my laptop pro"
 }
 
 ### 4. Update Product
@@ -24,7 +25,9 @@ Content-Type: application/json
 
 {
   "title": "Laptop Pro Max",
-  "price": 1500
+  "price": 1500,
+  "description" :"this is my laptop pro after update"
+
 }
 
 ### 5. Delete Product
