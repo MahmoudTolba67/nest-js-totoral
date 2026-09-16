@@ -14,7 +14,9 @@ import { ProductServices } from './product.service';
 
 @Controller('/api/products/')
 export class ProductController {
-    constructor(private readonly  productService: ProductServices){}
+    constructor(
+      private readonly  productService: ProductServices,
+    ){}
     @Post()
   public addProduct(@Body() body: CreateProductDto) {
     return this.productService.addProduct(body);
@@ -22,6 +24,7 @@ export class ProductController {
 
   @Get()
   public getAllProduct() {
+    
     return this.productService.getAll();
 }
 
