@@ -4,6 +4,8 @@ import { User } from "./user.entity";
 import { Repository } from "typeorm";
 import { RegisterDto } from "./dtos/register.dto";
 import * as bcrypt from "bcryptjs"
+import { LoginDto } from "./dtos/login.dto";
+import { retry } from "rxjs";
 
 @Injectable()
 export class UserService{
@@ -36,6 +38,25 @@ export class UserService{
         })
         newUser =await this.userRepository.save(newUser)
         return newUser
+   }
+
+   /**
+    * @params logindto data from client
+    * @return jwt (access token)
+    */
+
+   public async login(loginDto: LoginDto){
+    const {email, password} = loginDto
+
+    const user = await this.userRepository.findOne({where:{email}})
+    if(!user) throw new BadRequestException('invalid email or password')
+    
+      const passwordcheck = await bcrypt.compare(password , user.password)
+
+      if(!passwordcheck) throw new BadRequestException('invalid email or password')
+
+        return user ;
+
    }
   
 
