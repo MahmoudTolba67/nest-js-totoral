@@ -6,12 +6,16 @@ import { RegisterDto } from "./dtos/register.dto";
 import * as bcrypt from "bcryptjs"
 import { LoginDto } from "./dtos/login.dto";
 import { retry } from "rxjs";
+import { JwtService } from "@nestjs/jwt";
+import { AccessTokenType, JwtPayload } from "../../utiti/types";
+import { promises } from "dns";
 
 @Injectable()
 export class UserService{
 
   constructor(
-    @InjectRepository(User)private readonly userRepository : Repository<User>
+    @InjectRepository(User)private readonly userRepository : Repository<User> ,
+     private readonly jwtService : JwtService
 
   ){}
 
@@ -20,7 +24,7 @@ export class UserService{
    * @param registerDto data from creating new user
    * @returns jwt (access token)
    */
-  public async register (registerDto : RegisterDto){
+  public async register (registerDto : RegisterDto):Promise<AccessTokenType>{
 
     const {email , userName , password} = registerDto
 
@@ -37,7 +41,11 @@ export class UserService{
             userName
         })
         newUser =await this.userRepository.save(newUser)
-        return newUser
+        const accessToken =await this.genrateToken( {id : newUser.id , userType : newUser.userType})
+        return {accessToken}
+
+        
+
    }
 
    /**
@@ -45,7 +53,7 @@ export class UserService{
     * @return jwt (access token)
     */
 
-   public async login(loginDto: LoginDto){
+   public async login(loginDto: LoginDto) :Promise<AccessTokenType> {
     const {email, password} = loginDto
 
     const user = await this.userRepository.findOne({where:{email}})
@@ -55,8 +63,15 @@ export class UserService{
 
       if(!passwordcheck) throw new BadRequestException('invalid email or password')
 
-        return user ;
+        const accessToken = await this.genrateToken({id: user.id ,userType:user.userType })
 
+        return {accessToken} ;
+
+   }
+
+   private genrateToken (payload: JwtPayload) :Promise<string>{
+
+    return this.jwtService.signAsync(payload) ;
    }
   
 
